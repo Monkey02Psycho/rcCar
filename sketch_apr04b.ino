@@ -1,15 +1,19 @@
 #include <IRremote.h>
+#include <Servo.h>
 
 int RECV_PIN = 2;
 
 IRrecv irrecv(RECV_PIN);
 
 decode_results results;
+Servo myservo;
 
 const int controlPin1 = 11;
 const int controlPin2 = 3;
 const int enablePin = 5;
 const int irPin = 2;
+
+int pos = 0;
 
 bool isMotorOn = false;
 
@@ -17,6 +21,8 @@ void setup() {
   pinMode(controlPin1, OUTPUT);
   pinMode(controlPin2, OUTPUT);
   pinMode(enablePin, OUTPUT);
+
+  myservo.attach(8);
   
   Serial.begin(9600);
   
@@ -28,9 +34,11 @@ void loop() {
   if (irrecv.decode(&results)) {
     if(results.value == 0x511DBB){
       motorMove(true);
+      pos++;
     }
     if(results.value == 0xA3C8EDDB){
       motorMove(false);
+      pos--;
     }
     if(results.value == 0xE318261B){
       motorState();
